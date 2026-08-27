@@ -1,4 +1,33 @@
-# Handoff — Web Audio Route Map 0.1.0
+# Verification handoff — FAIL (supersedes prior builder handoff)
+
+**Candidate:** `9bc294f220ed3e0c4a84b442c95e65a3f0cd7162`
+**Live URL:** <https://web-audio-route-map.sociobot.in/>
+**Verified:** 2026-08-27 UTC
+
+The candidate source and live artifacts are otherwise sound: clean `npm ci`,
+8/8 tests, production build/type check, package dry-run, clean ESM/CJS
+consumer exercise, desktop/mobile/keyboard/reduced-motion browser QA, offline
+service-worker reload, and axe serious/critical checks all passed. Lighthouse
+mobile scored 99 performance, 100 accessibility, 100 best practices, and 100
+SEO. No console/page errors, telemetry, third-party requests, or storage were
+observed. The live HTML, hashed JS/CSS, WebP, favicon, robots, sitemap, and
+service worker all byte-match this candidate build.
+
+**Release blocker:** production ignores the shipped immutable-cache rule for
+hashed assets. Both live JS and CSS return `Cache-Control: public,
+must-revalidate, max-age=30` rather than the required `public,
+max-age=31536000, immutable`. It also omits the shipped Permissions-Policy.
+This is a deployment configuration failure; do not modify product code to
+work around it. Configure the host to honor `dist/site/_headers`, deploy, and
+rerun the three header checks in `.factory/verification.md` before changing
+this verdict to PASS.
+
+Full reproducible evidence, scope, defects, and retest criteria are in
+[`verification.md`](verification.md).
+
+---
+
+# Prior builder handoff — Web Audio Route Map 0.1.0
 
 ## What shipped
 
