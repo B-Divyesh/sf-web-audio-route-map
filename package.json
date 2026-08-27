@@ -1,0 +1,62 @@
+{
+  "name": "web-audio-route-map",
+  "version": "0.1.0",
+  "description": "An accessible, dependency-free signal route map for Web Audio projects.",
+  "keywords": [
+    "web-audio",
+    "audio",
+    "signal-flow",
+    "svg",
+    "accessibility"
+  ],
+  "license": "MIT",
+  "author": "Sociobot (Param Factory)",
+  "homepage": "https://web-audio-route-map.sociobot.in",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/B-Divyesh/sf-web-audio-route-map.git"
+  },
+  "bugs": {
+    "url": "https://github.com/B-Divyesh/sf-web-audio-route-map/issues"
+  },
+  "type": "module",
+  "main": "./dist/package/index.cjs",
+  "module": "./dist/package/index.js",
+  "types": "./dist/package/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/package/index.d.ts",
+      "import": "./dist/package/index.js",
+      "require": "./dist/package/index.cjs"
+    },
+    "./style.css": "./dist/package/style.css"
+  },
+  "files": [
+    "dist/package",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "clean": "node scripts/clean.mjs",
+    "dev": "npm run build:lib && vite --config vite.site.config.ts",
+    "build": "npm run clean && npm run build:lib && npm run build:site",
+    "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.lib.json",
+    "build:site": "vite build --config vite.site.config.ts",
+    "test": "vitest run --coverage=false",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.3",
+    "vitest": "^3.2.4"
+  }
+}

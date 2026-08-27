@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3f7f6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e1b20" media="(prefers-color-scheme: dark)" />
+    <meta name="description" content="Publish a clear, accessible SVG map beside any small Web Audio signal chain." />
+    <meta property="og:title" content="Web Audio Route Map" />
+    <meta property="og:description" content="A tiny dependency-free route map for Web Audio makers." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://web-audio-route-map.sociobot.in/assets/ceramic-route-hero.webp" />
+    <title>Web Audio Route Map — Make the signal path visible</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="./assets/ceramic-route-hero.webp" as="image" type="image/webp" fetchpriority="high" />
+    <link rel="stylesheet" href="./site.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="offline-note" id="offline-note" role="status" hidden>
+      You’re offline. The demo still works; exports stay on this device.
+    </div>
+
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="Web Audio Route Map home">
+        <svg aria-hidden="true" viewBox="0 0 40 40" width="40" height="40">
+          <path d="M6 20h8m12 0h8M14 20c0-8 12-8 12 0s-12 8-12 0Z" fill="none" stroke="currentColor" stroke-width="2.5" />
+          <circle cx="6" cy="20" r="3" fill="currentColor" /><circle cx="34" cy="20" r="3" fill="currentColor" />
+        </svg>
+        <span>Route Map <small>for Web Audio</small></span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#workbench">Demo</a>
+        <a href="#use">Use it</a>
+        <a href="https://github.com/B-Divyesh/sf-web-audio-route-map">Source</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <div class="hero__copy">
+          <p class="eyebrow"><span></span> Dependency-free · 0.1.0</p>
+          <h1 id="hero-title">Make the signal path visible.</h1>
+          <p class="lede">Publish a clear, keyboard-readable route map beside your Web Audio controls. Declare the nodes you know; give everyone else the orientation they need.</p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="#workbench">Try the live map</a>
+            <button class="install-command" id="copy-install" type="button" aria-describedby="copy-status">
+              <code>npm i web-audio-route-map</code>
+              <span aria-hidden="true">Copy</span>
+            </button>
+          </div>
+          <p class="micro-status" id="copy-status" aria-live="polite">No audio capture. No telemetry. Just your declaration.</p>
+        </div>
+        <figure class="hero__figure">
+          <img src="./assets/ceramic-route-hero.webp" width="1280" height="853" alt="Five white ceramic tiles connected by a cobalt channel that splits into two paths and rejoins" fetchpriority="high" />
+          <figcaption>One path in. Two treatments. One understandable output.</figcaption>
+        </figure>
+      </section>
+
+      <section class="workbench section" id="workbench" aria-labelledby="workbench-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow"><span></span> Live workbench</p>
+            <h2 id="workbench-title">Read the chain before hearing it</h2>
+          </div>
+          <p>Choose a familiar patch, follow the arrowheads, then export the exact map as an accessible SVG.</p>
+        </div>
+
+        <div class="bench-shell">
+          <div class="bench-tools" aria-label="Route map controls">
+            <fieldset class="example-picker">
+              <legend>Example graph</legend>
+              <button type="button" data-example="synth" aria-pressed="true">Basic synth</button>
+              <button type="button" data-example="parallel" aria-pressed="false">Wet / dry</button>
+              <button type="button" data-example="sidechain" aria-pressed="false">Sidechain</button>
+            </fieldset>
+            <div class="bench-actions">
+              <button type="button" class="button button--quiet" id="toggle-route" disabled>Mute dry route</button>
+              <button type="button" class="button button--quiet" id="clear-map">Show empty</button>
+              <button type="button" class="button button--primary" id="export-svg">Export SVG</button>
+            </div>
+          </div>
+
+          <div class="map-frame">
+            <div id="route-map"></div>
+          </div>
+          <p class="bench-status" id="bench-status" aria-live="polite">Basic synth loaded: four nodes, three routes.</p>
+
+          <div class="bench-notes">
+            <div>
+              <p class="note-label">Signal reading</p>
+              <p id="route-reading">Oscillator → Low-pass → Master gain → Speakers</p>
+            </div>
+            <div>
+              <p class="note-label">Keyboard</p>
+              <p>Tab into the map. Use arrows to move; press Enter for connections.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="explain section" aria-labelledby="explain-title">
+        <div class="section-heading section-heading--compact">
+          <div>
+            <p class="eyebrow"><span></span> A map, not a monitor</p>
+            <h2 id="explain-title">Explicit on purpose</h2>
+          </div>
+          <p>Automatic inspection breaks at wrappers, worklets, and app boundaries. A small declaration stays honest, portable, and publishable.</p>
+        </div>
+        <ol class="steps">
+          <li><span>01</span><strong>Name the pieces</strong><p>Use the labels your listeners already see in the interface.</p></li>
+          <li><span>02</span><strong>Describe the routes</strong><p>Add branches, route names, and disabled paths without touching audio.</p></li>
+          <li><span>03</span><strong>Publish the map</strong><p>Render beside controls or export a standalone SVG for docs and issues.</p></li>
+        </ol>
+      </section>
+
+      <section class="code-section section" id="use" aria-labelledby="use-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow"><span></span> Four nodes, one import</p>
+            <h2 id="use-title">Keep the declaration close to the sound</h2>
+          </div>
+          <p>The package ships ESM, CommonJS, TypeScript declarations, and one small stylesheet. Runtime dependencies: zero.</p>
+        </div>
+        <div class="code-shell">
+          <div class="code-shell__bar">
+            <span>route-map.ts</span>
+            <button id="copy-code" type="button">Copy example</button>
+          </div>
+          <pre tabindex="0"><code id="example-code"></code></pre>
+        </div>
+      </section>
+
+      <section class="proof section" aria-labelledby="proof-title">
+        <div>
+          <p class="eyebrow"><span></span> Small by design</p>
+          <h2 id="proof-title">The map leaves the audio alone.</h2>
+        </div>
+        <ul>
+          <li><strong>0</strong><span>runtime dependencies</span></li>
+          <li><strong>SVG</strong><span>portable export</span></li>
+          <li><strong>AA</strong><span>keyboard and text equivalents</span></li>
+          <li><strong>Local</strong><span>no data leaves the page</span></li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>Web Audio Route Map is an MIT-licensed utility from <a href="https://sociobot.in">Param Factory</a>.</p>
+      <p><a href="https://github.com/B-Divyesh/sf-web-audio-route-map">Read the source</a> <span aria-hidden="true">·</span> No accounts, cookies, or tracking.</p>
+    </footer>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
