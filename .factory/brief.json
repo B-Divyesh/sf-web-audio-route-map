@@ -1,0 +1,13 @@
+{
+  "slug": "web-audio-route-map",
+  "title": "Web Audio Route Map",
+  "territory": "games-creative",
+  "user": "A browser-audio maker who needs to understand and share a small Web Audio signal chain without manually diagramming it.",
+  "current_workaround": "Read source code, draw a diagram, use browser devtools, or keep a DAW patchbay and window layout open.",
+  "smallest_useful_product": "A dependency-free JS library plus demo that renders a live, keyboard-accessible node/route map from an explicit graph declaration and exports SVG.",
+  "non_goals": ["Audio hosting", "An audio engine", "Automatic inspection of arbitrary minified code"],
+  "artifact_class": "library-npm",
+  "monetization": "free",
+  "constraints": "Do not claim complete automatic Web Audio introspection; emitted SVG must have text equivalents and no external telemetry.",
+  "state": "RESEARCHED"
+}
