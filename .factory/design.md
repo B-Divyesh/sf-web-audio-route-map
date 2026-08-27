@@ -76,7 +76,7 @@ contrast.
 
 ## Asset plan and provenance
 
-- `site/assets/ceramic-route-hero.webp`: original generated 3D editorial still
+- `site/public/assets/ceramic-route-hero-v1.webp`: original generated 3D editorial still
   of porcelain audio nodes connected by cobalt glaze channels. It visually
   establishes the routing metaphor, has no embedded text, and is served with a
   descriptive alt attribute, explicit dimensions, responsive sizing, and a
@@ -86,8 +86,8 @@ contrast.
   not add runtime requests.
 
 Generation prompt (factory `gen-image.sh`, deployment recorded by the generated
-sidecar, 2026-08-27; output is original project artwork under the repository's
-MIT license):
+sidecar at `.factory/asset-provenance/ceramic-route-hero-v1.json`, 2026-08-27;
+output is original project artwork under the repository's MIT license):
 
 > Use case: stylized-concept. Asset type: editorial landing-page hero for a Web
 > Audio route mapping library. Scene: a clean pale ice shelf in a ceramicist's
@@ -100,4 +100,3 @@ MIT license):
 > readable at small size. Palette: frost white, blue-gray, deep cobalt, one
 > restrained sea-glass green accent. Constraints: no words, labels, letters,
 > logos, audio waveforms, knobs, cables, people, watermark, border, or UI.
-
