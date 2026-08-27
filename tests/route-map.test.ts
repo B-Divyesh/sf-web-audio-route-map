@@ -26,7 +26,7 @@ describe('createRouteMap', () => {
     createRouteMap(container, documentedGraph, { label: 'Synth signal path' });
 
     const svg = container.querySelector('svg');
-    expect(svg?.getAttribute('role')).toBe('img');
+    expect(svg?.getAttribute('role')).toBe('group');
     expect(svg?.querySelector('title')?.textContent).toBe('Synth signal path');
     expect(svg?.querySelector('desc')?.textContent).toContain('4 nodes and 3 routes');
     expect(container.querySelectorAll('.warm-node')).toHaveLength(4);
@@ -112,6 +112,8 @@ describe('createRouteMap', () => {
     expect(output).toMatch(/^<\?xml/);
     expect(output).toContain('Feedback loop');
     expect(output).toContain('aria-labelledby');
+    expect(output).toContain('role="img"');
+    expect(output).not.toContain('role="button"');
   });
 
   it('destroys cleanly and becomes inert', () => {

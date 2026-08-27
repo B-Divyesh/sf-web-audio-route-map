@@ -21,6 +21,12 @@
   width: 100%;
   min-width: 520px;
   height: auto;
+  animation: warm-settle 220ms ease-out both;
+}
+
+@keyframes warm-settle {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .warm-error {
@@ -88,4 +94,8 @@
   .warm-canvas {
     width: 760px;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .warm-canvas { animation: none; }
 }

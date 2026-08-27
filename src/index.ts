@@ -121,7 +121,7 @@ function createSvg(graph: RouteGraph, label: string, idPrefix: string): SVGSVGEl
   setAttributes(svg, {
     xmlns: SVG_NS,
     viewBox: `0 0 ${layout.width} ${layout.height}`,
-    role: 'img',
+    role: 'group',
     'aria-labelledby': `${titleId} ${descId}`,
     preserveAspectRatio: 'xMidYMid meet',
     style: '--warm-canvas:#f3f7f6;--warm-surface:#ffffff;--warm-text:#172b31;--warm-muted:#50666b;--warm-route:#145da0;--warm-focus:#0c426f;--warm-border:#b9d0cf'
@@ -297,7 +297,14 @@ export function createRouteMap(container: Element, initialGraph: RouteGraph, opt
     toSVG() {
       if (destroyed) throw new Error('This route map has been destroyed.');
       if (!svg) throw new Error('Fix the graph before exporting SVG.');
-      return `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(svg)}`;
+      const exported = svg.cloneNode(true) as SVGSVGElement;
+      exported.setAttribute('role', 'img');
+      exported.querySelectorAll('.warm-node').forEach((node) => {
+        node.removeAttribute('role');
+        node.removeAttribute('tabindex');
+        node.removeAttribute('aria-label');
+      });
+      return `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(exported)}`;
     },
     download(filename = 'audio-route-map.svg') {
       const safeFilename = filename.toLowerCase().endsWith('.svg') ? filename : `${filename}.svg`;
