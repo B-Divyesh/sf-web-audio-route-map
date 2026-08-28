@@ -1,129 +1,92 @@
-# Verification handoff — FAIL (supersedes prior builder handoff)
+# Repair handoff — Web Audio Route Map 0.1.0
 
-**Candidate:** `9bc294f220ed3e0c4a84b442c95e65a3f0cd7162`
+**Repair base:** `b455a19a62e32ff0512648f32246ef679fcdfa74`
+**Repaired candidate:** pending commit
 **Live URL:** <https://web-audio-route-map.sociobot.in/>
-**Verified:** 2026-08-27 UTC
+**Verified locally:** 2026-08-28 UTC
 
-The candidate source and live artifacts are otherwise sound: clean `npm ci`,
-8/8 tests, production build/type check, package dry-run, clean ESM/CJS
-consumer exercise, desktop/mobile/keyboard/reduced-motion browser QA, offline
-service-worker reload, and axe serious/critical checks all passed. Lighthouse
-mobile scored 99 performance, 100 accessibility, 100 best practices, and 100
-SEO. No console/page errors, telemetry, third-party requests, or storage were
-observed. The live HTML, hashed JS/CSS, WebP, favicon, robots, sitemap, and
-service worker all byte-match this candidate build.
+## Release-blocking repair
 
-**Release blocker:** production ignores the shipped immutable-cache rule for
-hashed assets. Both live JS and CSS return `Cache-Control: public,
-must-revalidate, max-age=30` rather than the required `public,
-max-age=31536000, immutable`. It also omits the shipped Permissions-Policy.
-This is a deployment configuration failure; do not modify product code to
-work around it. Configure the host to honor `dist/site/_headers`, deploy, and
-rerun the three header checks in `.factory/verification.md` before changing
-this verdict to PASS.
+The independent verifier correctly identified that Azure Static Web Apps does
+not consume the portable `dist/site/_headers` manifest. Because no native
+Azure configuration existed, the deployment helper generated only minimal
+headers and production served immutable hashed JS/CSS with a 30-second cache
+and omitted `Permissions-Policy`.
 
-Full reproducible evidence, scope, defects, and retest criteria are in
-[`verification.md`](verification.md).
+`site/public/staticwebapp.config.json` now supplies the native deployment
+configuration that Azure reads and Vite copies to `dist/site`. It preserves the
+existing navigation fallback and adds:
 
----
+- `Cache-Control: public, max-age=31536000, immutable` for `/assets/*`.
+- `Cache-Control: no-cache` for `/sw.js`, so updates remain discoverable.
+- `Permissions-Policy: camera=(), microphone=(), geolocation=()` along with
+  the existing nosniff and referrer policies.
+- A same-origin CSP with `frame-ancestors 'none'` as additional response
+  hardening.
 
-# Prior builder handoff — Web Audio Route Map 0.1.0
+The portable `_headers` policy was kept and aligned with this configuration.
+`npm run build` now fails if the required Azure policy is absent or changed in
+the built `dist/site/staticwebapp.config.json`. Unit regression coverage also
+asserts the immutable cache, service-worker cache, privacy header, and fallback
+manifest policy.
 
-## What shipped
+## Verification
 
-- Dependency-free TypeScript library with one public factory,
-  `createRouteMap(container, graph, options?)`.
-- ESM, CommonJS, declaration files, source maps, and a standalone stylesheet in
-  `dist/package` after a build.
-- Validated explicit node/route declarations, deterministic branch and cycle
-  layout, inactive routes, live updates, useful empty and error states, and
-  clean teardown.
-- Keyboard exploration with Arrow keys, Home, End, Enter, and Space; roving
-  focus; live announcements; and a full graph text equivalent.
-- Self-contained SVG serialization and browser download. The live SVG is an
-  interactive group; the exported SVG intentionally becomes a non-interactive
-  image with its own `<title>` and `<desc>`.
-- Responsive documentation site and real package-driven demo with synth,
-  parallel wet/dry, and sidechain examples. The demo includes route muting,
-  empty-state recovery, copy feedback, export feedback, and an offline status.
-- Versioned offline shell/service worker, immutable asset headers, robots.txt,
-  sitemap, canonical metadata, original favicon, and a 54 KB original WebP
-  hero. Visual rationale and complete asset provenance are in
-  `.factory/design.md` and `.factory/asset-provenance/`.
-- API-first README, MIT license, changelog, and eight unit/integration tests
-  covering the documented example, updates, invalid input, empty state,
-  keyboard paths, escaping, cycles, SVG export, and teardown.
-
-No privacy or terms pages are required: the product has no accounts, payment,
-analytics, telemetry, cookies, or user-data storage. Its service worker caches
-only public static files on the visitor's own device.
-
-## Run and verify
-
-Requires Node.js 20+.
+Run from a clean checkout with Node 20+:
 
 ```sh
-npm install
+npm ci
 npm test
 npm run build
+npm run test:browser
+npm pack --dry-run
 ```
 
-The work-order-specific site command also works from a clean tree:
+Evidence from this repair:
+
+- `npm ci`: 96 packages audited, 0 vulnerabilities.
+- `npm test`: 2 files, **10/10** tests passing (including two new deployment
+  policy regressions).
+- `npm run build`: library type-check (`tsc -p tsconfig.lib.json`), ESM/CJS
+  library build, production site build, and built-policy check all passed.
+  Site output includes `dist/site/staticwebapp.config.json`; initial JS is
+  15.50 kB (6.00 kB gzip), CSS 12.26 kB (3.63 kB gzip), and the original hero
+  WebP remains 54.4 kB.
+- `npm run test:browser` against the production build: desktop interaction
+  (wet/dry muting), keyboard Arrow navigation, axe WCAG A/AA serious/critical
+  scan, service-worker offline cached reload, offline notice, and 390 × 844
+  mobile overflow all passed with no browser errors.
+- `npm pack --dry-run`: package contains ESM, CommonJS, declarations, and CSS;
+  a clean temporary consumer resolved the ESM factory, CommonJS factory, and
+  `web-audio-route-map/style.css` export.
+
+## Deployment and live retest
+
+Deploy the built static directory through the factory Azure Static Web Apps
+work order:
 
 ```sh
-npm run clean
-npm run build:site
+/opt/fleet/lib/deploy-static.sh web-audio-route-map dist/site
 ```
 
-It creates `dist/site/index.html`. `npm run build` additionally leaves the npm
-artifacts in `dist/package`. Preview locally with:
+Then verify the actual edge responses (the authoritative regression check):
 
 ```sh
-npx vite preview --config vite.site.config.ts --host 127.0.0.1 --port 4173
+curl -sSIL https://web-audio-route-map.sociobot.in/assets/<current-js>.js
+curl -sSIL https://web-audio-route-map.sociobot.in/assets/<current-css>.css
+curl -sSIL https://web-audio-route-map.sociobot.in/
 ```
 
-Publishing credentials belong to the factory. The ready-to-publish package can
-be inspected with `npm pack --dry-run`; it is 23.7 KB compressed / 95.5 KB
-unpacked in the final check.
-
-## Verification completed on 2026-08-27
-
-- `npm test`: 8/8 passing.
-- `npm run build`: passing; `dist/site/index.html` present.
-- `npm run clean && npm run build:site`: passing from a missing `dist/`.
-- ESM and CommonJS entry points: imported successfully.
-- Factory `verify-url.sh`: HTTP 200; zero console errors; title and `lang`
-  present; exactly one h1; main landmark present; zero missing alt attributes;
-  zero unlabeled buttons.
-- axe-core WCAG A/AA/2.1 AA: zero violations at 390 × 844.
-- Browser interaction smoke test: wet/dry graph selection, inactive route,
-  arrow-key focus, and downloaded `parallel-route-map.svg` all passed.
-- Offline smoke test: service-worker-controlled reload retained the page and
-  all four demo nodes, displayed offline status, and logged no errors.
-- Mobile overflow check: page width 390 px at a 390 px viewport; the graph has
-  its own intentional horizontal scroller (760 px content) for legible nodes.
-- Final Lighthouse 12.8.2 mobile: Performance **100**, Accessibility **100**,
-  Best Practices **100**, SEO **100**. FCP 1.1 s, LCP 1.2 s, TBT 40 ms,
-  CLS 0, total transferred 67 KiB.
-- Initial site assets: 15.5 KB JS (6.0 KB gzip), 12.3 KB CSS (3.6 KB gzip),
-  54.4 KB WebP. These are below the 200/50/300 KB budgets.
-- `npm audit`: zero vulnerabilities.
+Both hashed assets must return `Cache-Control: public, max-age=31536000,
+immutable`; the root and assets must include the configured
+`Permissions-Policy`. The deployment result and live retest will be recorded
+below before final handoff.
 
 ## Known limits
 
-- Graphs are explicit by design. The library does not inspect `AudioNode`
-  connections or arbitrary/minified source.
-- The automatic layout targets small publishable chains, not DAW-scale graphs
-  or manual node positioning. Cycles are rendered safely but not interactively
-  rearranged.
-- Automated browser, axe, and keyboard checks passed; a named screen-reader
-  session (NVDA, VoiceOver, or TalkBack) was not available in the container.
-
-## Suggested next steps
-
-- Publish version 0.1.0 with factory registry credentials; do not publish from
-  the build worker.
-- Recruit the three independent makers in the success measure and run the
-  five-question signal-path comprehension test.
-- Use that field feedback before expanding layout controls or adding adapters
-  for specific audio frameworks.
+- Graph declarations remain explicit by design; the library does not inspect
+  arbitrary or minified Web Audio code.
+- The automatic layout targets small publishable chains rather than
+  DAW-scale/manual positioning.
+- No account, payment, analytics, telemetry, cookie, or user-data storage is
+  present. The service worker stores only public static shell assets locally.

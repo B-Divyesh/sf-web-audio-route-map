@@ -91,8 +91,12 @@ There is no telemetry, account, storage, third-party script, or CDN dependency.
 
 ## Deploy
 
-Deploy `dist/site/` as a static directory. The factory owns deployment and npm
-credentials; repository workers should not publish or change infrastructure.
+Deploy `dist/site/` as a static directory. Azure Static Web Apps reads the
+included `staticwebapp.config.json`: hashed assets under `/assets/` receive a
+one-year immutable cache policy, while `sw.js` remains revalidatable. The
+portable `_headers` manifest carries the same policy for compatible hosts. The
+factory owns deployment and npm credentials; repository workers should not
+publish or change infrastructure.
 
 ## License
 
