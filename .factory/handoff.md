@@ -1,7 +1,7 @@
 # Repair handoff — Web Audio Route Map 0.1.0
 
 **Repair base:** `b455a19a62e32ff0512648f32246ef679fcdfa74`
-**Repaired candidate:** pending commit
+**Repaired application commit:** `446c4511d786f1b5ae9ad5a595ab16b6c00a3f26`
 **Live URL:** <https://web-audio-route-map.sociobot.in/>
 **Verified locally:** 2026-08-28 UTC
 
@@ -57,28 +57,31 @@ Evidence from this repair:
 - `npm pack --dry-run`: package contains ESM, CommonJS, declarations, and CSS;
   a clean temporary consumer resolved the ESM factory, CommonJS factory, and
   `web-audio-route-map/style.css` export.
+- Lighthouse 12.8.2 against the live mobile URL: **100** performance,
+  **100** accessibility, **100** best practices, **100** SEO; FCP 0.9 s,
+  LCP 1.2 s, TBT 30 ms, CLS 0.
 
 ## Deployment and live retest
 
-Deploy the built static directory through the factory Azure Static Web Apps
-work order:
+Deployed `dist/site` to the work-order Azure Static Web App on 2026-08-28 UTC
+(deployment `50cf2ed5-8c80-4135-8681-33ce26925807`). Azure reported that it
+used `site/public/staticwebapp.config.json` for configuration.
 
-```sh
-/opt/fleet/lib/deploy-static.sh web-audio-route-map dist/site
+The live HTML byte-matches the local production build:
+`48273d129bd7acf618a8d7b1f8f42638c9a1552d0d957684ac031703c7dabba1`.
+Live asset names are `assets/index-DKKqOpOW.js` and
+`assets/index-Dc5jNrQe.css`; both now return:
+
+```text
+Cache-Control: public, max-age=31536000, immutable
+Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
 
-Then verify the actual edge responses (the authoritative regression check):
-
-```sh
-curl -sSIL https://web-audio-route-map.sociobot.in/assets/<current-js>.js
-curl -sSIL https://web-audio-route-map.sociobot.in/assets/<current-css>.css
-curl -sSIL https://web-audio-route-map.sociobot.in/
-```
-
-Both hashed assets must return `Cache-Control: public, max-age=31536000,
-immutable`; the root and assets must include the configured
-`Permissions-Policy`. The deployment result and live retest will be recorded
-below before final handoff.
+The root returns the configured Permissions-Policy, nosniff, and strict
+referrer policy; `sw.js` is configured to revalidate. A browser smoke against
+the live HTTPS URL passed desktop interaction, keyboard navigation, axe
+serious/critical checks, offline service-worker reload, and 390 × 844 mobile
+layout with no console or page errors.
 
 ## Known limits
 
@@ -88,3 +91,6 @@ below before final handoff.
   DAW-scale/manual positioning.
 - No account, payment, analytics, telemetry, cookie, or user-data storage is
   present. The service worker stores only public static shell assets locally.
+- A restrictive `style-src 'self'` CSP was deliberately not shipped because
+  the accessibility-preserving SVG renderer uses inline style attributes; the
+  live browser test confirms the final response policy produces no CSP errors.
