@@ -21,8 +21,6 @@ existing navigation fallback and adds:
 - `Cache-Control: no-cache` for `/sw.js`, so updates remain discoverable.
 - `Permissions-Policy: camera=(), microphone=(), geolocation=()` along with
   the existing nosniff and referrer policies.
-- A same-origin CSP with `frame-ancestors 'none'` as additional response
-  hardening.
 
 The portable `_headers` policy was kept and aligned with this configuration.
 `npm run build` now fails if the required Azure policy is absent or changed in

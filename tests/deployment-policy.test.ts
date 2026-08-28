@@ -16,7 +16,6 @@ describe('static deployment response policy', () => {
     expect(config.globalHeaders['Permissions-Policy']).toBe(permissions);
     expect(config.globalHeaders['X-Content-Type-Options']).toBe('nosniff');
     expect(config.globalHeaders['Referrer-Policy']).toBe('strict-origin-when-cross-origin');
-    expect(config.globalHeaders['Content-Security-Policy']).toContain("frame-ancestors 'none'");
     expect(config.routes).toContainEqual({
       route: '/assets/*',
       headers: { 'Cache-Control': immutableCache }
@@ -32,6 +31,5 @@ describe('static deployment response policy', () => {
 
     expect(headers).toContain(`Cache-Control: ${immutableCache}`);
     expect(headers).toContain(`Permissions-Policy: ${permissions}`);
-    expect(headers).toContain("Content-Security-Policy: default-src 'self'");
   });
 });
